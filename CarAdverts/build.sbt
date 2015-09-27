@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
 )
 
 libraryDependencies += "com.typesafe.play" %% "anorm" % "2.4.0"
+libraryDependencies += filters
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
 
