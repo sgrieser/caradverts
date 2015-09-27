@@ -120,7 +120,40 @@ class CarAdvertsApplicationTester extends Specification {
       contentAsString(caradverts3) must contain("BMW X3")
       contentAsString(caradverts3) must contain("VW Passat")
     }
-    
+ 
+    "return list of all car adverts sorted by Name" in new WithApplication{
+ 
+    // send first car advert
+      val jsonBody = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
+  
+      val caradverts = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")).get
+      status(caradverts) must equalTo(200)                
+      
+      // send second car advert
+      val jsonBody2 = Json.obj("id" -> JsNumber(2),
+                              "title" -> JsString("Audio A3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
+  
+      val caradverts2 = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody2).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")).get
+     status(caradverts2) must equalTo(200)
+     
+     // get list of all car adverts:
+     val caradverts3 = route(FakeRequest(GET, "/caradverts?sortedBy=title")).get
+
+      status(caradverts3) must equalTo(200)
+      contentType(caradverts3) must beSome.which(_ == "application/json")
+      contentAsString(caradverts3) must beEqualTo("""[{"id":2,"title":"Audio A3","fuel":"Diesel","price":10000,"isNew":true},{"id":1,"title":"BMW X3","fuel":"Diesel","price":10000,"isNew":true}]""")
+    }  
  
     "return list of one car advert specified by its ID" in new WithApplication{
  

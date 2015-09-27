@@ -7,6 +7,7 @@ import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 import models._
+import models.domainlogic._
 import models.repository.AnormCarAdvertsRepository
 
 import org.joda.time.DateTime
@@ -49,9 +50,8 @@ class CarAdvertsApplication extends Controller {
   /**
    * Lists all car adverts
    */
-  def listAllCarAdverts = Action {
- 
-    val json = Json.toJson( repository.findAll() )
+  def listAllCarAdverts(sortedBy : String) = Action {
+    val json = Json.toJson( CarAdvertSorter.sortCarAdverts( repository.findAll(), sortedBy) )
     Ok(json)
   }
   
