@@ -45,6 +45,14 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
     
   }
  
+  /**
+   * Retrievs a car advert specified by its ID
+   */
+  def findById(id: Long): Seq[CarAdvert] = {
+    DB.withConnection { implicit connection =>
+      SQL("select * from CARS where id = " + id).as(simple *)
+    }
+  }
  
   /**
    * Stores a new car advert into DB
@@ -67,6 +75,34 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
     }    
     
   }  
+  
+  /**
+   * Deletes a car advert specified by it ID
+   */
+  def deleteById(id: Long) = {
+    DB.withConnection { implicit connection =>
+      SQL("delete from CARS where id={id}").
+        on('id -> id).executeUpdate()
+    }
+  }
+  
+  /**
+   * Updates an existing car advert
+   */
+  def update(carAdvert: CarAdvert): CarAdvert = {
+    DB.withConnection { implicit connection =>
+      SQL("""
+        UPDATE CARS 
+        SET title={title}
+        WHERE id={id};
+        """).
+        on('id -> carAdvert.id,  
+           'title -> carAdvert.title
+           ).executeUpdate()
+    }
+    
+    carAdvert
+  }    
   
  
 }

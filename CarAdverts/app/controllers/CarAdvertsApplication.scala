@@ -43,7 +43,10 @@ class CarAdvertsApplication extends Controller {
     Ok(json)
   }
   
- def saveCarAdvert = Action(BodyParsers.parse.json) { request =>
+  /**
+   * Saves a new car advert
+   */
+  def saveCarAdvert = Action(BodyParsers.parse.json) { request =>
     val carResult = request.body.validate[CarAdvert]
     carResult.fold(
         errors => {
@@ -63,5 +66,42 @@ class CarAdvertsApplication extends Controller {
     )
   }  
   
+    /**
+   * Updates an existing car advert
+   */
+  def updateCarAdvert = Action(BodyParsers.parse.json) { request =>
+    val carResult = request.body.validate[CarAdvert]
+    carResult.fold(
+        errors => {
+          BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toFlatJson(errors)))
+        },
+        car => {
+          
+          try {
+            repository.update(car)
+            Ok(Json.obj("status" -> "OK", "message" -> ("Car '" + car.title + "' updated")))
+          }
+          catch {
+            case e : Exception => BadRequest(Json.obj("status" -> "KO", "message" -> e.getMessage))
+          }
+        }
+    )
+  }  
+  
+  /**
+   * Retrieves a specific car advert specified by its ID
+   */
+  def listCarAdvertById(id: Long) = Action {
+    val json = Json.toJson(repository.findById(id))
+    Ok(json)
+  }
+  
+  /**
+   * Deletes a specific car advert specified by its ID
+   */
+  def deleteCarAdvertById(id: Long) = Action {
+    repository.deleteById(id)
+    Ok("Car deleted")
+  }
 
 }

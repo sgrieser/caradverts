@@ -3,6 +3,10 @@
 # ~~~~
 
 # Home page
-GET     /caradverts                           controllers.CarAdvertsApplication.listAllCarAdverts
+GET     /caradverts                 controllers.CarAdvertsApplication.listAllCarAdverts
+GET     /caradverts/:id             controllers.CarAdvertsApplication.listCarAdvertById(id: Long)
+DELETE  /caradverts/:id             controllers.CarAdvertsApplication.deleteCarAdvertById(id: Long)
+
 
 POST    /caradverts                 controllers.CarAdvertsApplication.saveCarAdvert
+PUT     /caradverts                 controllers.CarAdvertsApplication.updateCarAdvert

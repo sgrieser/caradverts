@@ -7,8 +7,10 @@ import play.api.test._
 import play.api.test.Helpers._
 
 /**
- * add your integration spec here.
- * An integration test will fire up a whole play application in a real (or headless) browser
+ * Simple acceptance test. It just tries to connect to the WebService. The real functionality
+ * is tested in the integration test.
+ * 
+ * -> regards as sufficient for this exercise; not applicable in real word application!
  */
 @RunWith(classOf[JUnitRunner])
 class CarAdvertsWebServiceTester extends Specification {
