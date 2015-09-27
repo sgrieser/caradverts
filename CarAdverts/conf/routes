@@ -3,4 +3,4 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.CarAdvertsApplication.index
+GET     /caradverts                           controllers.CarAdvertsApplication.listAllCarAdverts

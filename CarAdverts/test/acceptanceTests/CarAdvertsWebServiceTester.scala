@@ -19,11 +19,11 @@ class CarAdvertsWebServiceTester extends Specification {
 
     "work from within a client" in new WithBrowser {
 
-      browser.goTo("http://localhost:" + port)
+      browser.goTo("http://localhost:" + port + "/caradverts")
 
       val p = browser.pageSource
       
-      browser.pageSource must contain("Your new application is ready.")
+      browser.pageSource must contain("""[{"id":1,"title":"Car 1"},{"id":2,"title":"Car 2"},{"id":3,"title":"Car 3"},{"id":4,"title":"Car 4"}]""")
     }
   }
 }
