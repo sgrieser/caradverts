@@ -23,7 +23,7 @@ class CarAdvertsWebServiceTester extends Specification {
 
       val p = browser.pageSource
       
-      browser.pageSource must contain("""[{"id":1,"title":"Car 1"},{"id":2,"title":"Car 2"},{"id":3,"title":"Car 3"},{"id":4,"title":"Car 4"}]""")
+      browser.pageSource must contain("[]")
     }
   }
 }

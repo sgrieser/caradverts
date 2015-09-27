@@ -1,14 +1,21 @@
 package controllers
 
 import play.api._
+
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
 import models._
+import models.repository.AnormCarAdvertsRepository
 
 class CarAdvertsApplication extends Controller {
 
+  /**
+   * Repository
+   */
+  val repository = new AnormCarAdvertsRepository
+  
   /**
    * writes to convert car adverts into Json type
    */
@@ -17,21 +24,37 @@ class CarAdvertsApplication extends Controller {
     (JsPath \ "title").write[String]
    )(unlift(CarAdvert.unapply))  
   
+   
+   /**
+    * reads to convert Json types into car adverts
+    */
+     implicit val carReads: Reads[CarAdvert] = (
+    (JsPath \ "id").read[Long] and
+    (JsPath \ "title").read[String]
+   )(CarAdvert.apply _)
+   
   
   /**
    * Lists all car adverts
    */
   def listAllCarAdverts = Action {
-    
-    val fakeListOfCarAdverts = List(
-        new CarAdvert(1, "Car 1"),
-        new CarAdvert(2, "Car 2"),
-        new CarAdvert(3, "Car 3"),
-        new CarAdvert(4, "Car 4")   
-    )
-     
-    val json = Json.toJson( fakeListOfCarAdverts )
+ 
+    val json = Json.toJson( repository.findAll() )
     Ok(json)
   }
+  
+ def saveCarAdvert = Action(BodyParsers.parse.json) { request =>
+    val carResult = request.body.validate[CarAdvert]
+    carResult.fold(
+        errors => {
+          BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toFlatJson(errors)))
+        },
+        car => {
+            repository.create(car)
+            Ok(Json.obj("status" -> "OK", "message" -> ("Car '" + car.title + "' saved")))
+        }
+    )
+  }  
+  
 
 }

@@ -4,3 +4,5 @@
 
 # Home page
 GET     /caradverts                           controllers.CarAdvertsApplication.listAllCarAdverts
+
+POST    /caradverts                 controllers.CarAdvertsApplication.saveCarAdvert
