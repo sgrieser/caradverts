@@ -34,7 +34,7 @@ class CarAdvertsApplicationTester extends Specification {
     "save a new car advert"  in new WithApplication{
       
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW"))
+                              "title" -> JsString("BMW X3"))
       val request = FakeRequest().withJsonBody(jsonBody).withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
@@ -43,11 +43,43 @@ class CarAdvertsApplicationTester extends Specification {
                               
       status(caradverts.get) must equalTo(200)
       contentType(caradverts.get) must beSome.which(_ == "application/json")
-      contentAsString(caradverts.get) must contain ("Car 'BMW' saved")
+      contentAsString(caradverts.get) must contain ("Car 'BMW X3' saved")
 
       
     }
   
+   "reject a new car advert with an id which already exists"  in new WithApplication{
+
+     // send first car advert
+      val jsonBody = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("BMW X3"))
+      val request = FakeRequest().withJsonBody(jsonBody).withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")
+  
+      val caradverts = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
+                              
+      status(caradverts.get) must equalTo(200)
+      
+      
+      // send second car advert
+      val jsonBody2 = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("VW Passat"))
+      val request2 = FakeRequest().withJsonBody(jsonBody2).withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")
+  
+      val caradverts2 = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
+      
+      
+      status(caradverts2.get) must equalTo(400)
+      contentType(caradverts2.get) must beSome.which(_ == "application/json")
+      val s = contentAsString(caradverts2.get)
+      contentAsString(caradverts2.get) must contain ("Eindeutiger Index oder Primärschlüssel verletzt")
+
+      
+    }    
+    
  
   }
 }

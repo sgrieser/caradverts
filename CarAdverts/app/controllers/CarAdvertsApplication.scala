@@ -50,8 +50,15 @@ class CarAdvertsApplication extends Controller {
           BadRequest(Json.obj("status" -> "KO", "message" -> JsError.toFlatJson(errors)))
         },
         car => {
+          
+          try {
             repository.create(car)
             Ok(Json.obj("status" -> "OK", "message" -> ("Car '" + car.title + "' saved")))
+            
+          }
+          catch {
+            case e : Exception => BadRequest(Json.obj("status" -> "KO", "message" -> e.getMessage))
+          }                    
         }
     )
   }  
