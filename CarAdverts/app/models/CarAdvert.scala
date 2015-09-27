@@ -8,7 +8,12 @@ import org.joda.time.DateTime
  * @author steffen
  */
 case class CarAdvert(id: Long, 
-              title: String 
+              title: String, 
+              fuel : FuelType, 
+              price: Long, 
+              isNew : Boolean, 
+              mileage: Option[Long], 
+              firstRegistration : Option[DateTime] 
  )
 
               

@@ -7,6 +7,7 @@ import models._
 import models.repository.AnormCarAdvertsRepository
 import play.api.db._
 import play.api.test._
+import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
 class AnormCarAdvertsRepositoryTester extends Specification{
@@ -14,18 +15,24 @@ class AnormCarAdvertsRepositoryTester extends Specification{
     "The db " should {
      "create a new CarAdvert and store it in the DB" in new WithApplication{
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, Some(12345), Some(new DateTime(2014-11-11))))
        val result = repo.findAll()
+       result must have size(1)
        result must have size(1)
        result(0).id must beEqualTo(1)
        result(0).title must beEqualTo("Car 1")
+       result(0).price must beEqualTo(20000)
+       result(0).fuel must beEqualTo(Gasoline)
+       result(0).isNew must beEqualTo(true)
+       result(0).mileage must beEqualTo(Some(12345))
+       result(0).firstRegistration must beEqualTo(Some(new DateTime(2014-11-11)))
      }
      
      "return the list of all car adverts" in new WithApplication {
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
-       repo.create(new CarAdvert(2, "Car 2"))
-       repo.create(new CarAdvert(3, "Car 3"))
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(2, "Car 2", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(3, "Car 3", Gasoline, 20000, true, None, None))
  
        val result = repo.findAll()
        result must have size(3)
@@ -40,10 +47,10 @@ class AnormCarAdvertsRepositoryTester extends Specification{
      "return a car advert specified by its ID" in new WithApplication {
        
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
-       repo.create(new CarAdvert(2, "Car 2"))
-       repo.create(new CarAdvert(3, "Car 3"))
-       
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(2, "Car 2", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(3, "Car 3", Gasoline, 20000, true, None, None))
+        
        val result = repo.findById(2)
        result must have size(1)
        result(0).id must beEqualTo(2)
@@ -53,20 +60,20 @@ class AnormCarAdvertsRepositoryTester extends Specification{
      
      "return an empty list in case the ID of a car advert does not exists" in new WithApplication {
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
-       repo.create(new CarAdvert(2, "Car 2"))
-       repo.create(new CarAdvert(3, "Car 3"))
-       
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(2, "Car 2", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(3, "Car 3", Gasoline, 20000, true, None, None))
+        
        val result = repo.findById(4)
        result must have size(0)       
      }      
      
      "delete a car advert" in new WithApplication {
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
-       repo.create(new CarAdvert(2, "Car 2"))
-       repo.create(new CarAdvert(3, "Car 3"))
- 
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(2, "Car 2", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(3, "Car 3", Gasoline, 20000, true, None, None))
+  
        repo.deleteById(2)
        
        val result = repo.findAll()
@@ -79,9 +86,9 @@ class AnormCarAdvertsRepositoryTester extends Specification{
      
      "reject to delete a car advert if ID does not exist" in new WithApplication {
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
-       repo.create(new CarAdvert(2, "Car 2"))
-       repo.create(new CarAdvert(3, "Car 3"))
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(2, "Car 2", Gasoline, 20000, true, None, None))
+       repo.create(new CarAdvert(3, "Car 3", Gasoline, 20000, true, None, None))
  
        repo.deleteById(4)
        
@@ -91,22 +98,26 @@ class AnormCarAdvertsRepositoryTester extends Specification{
     
      "update a car advert" in new WithApplication {
        val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
        
-       repo.update(new CarAdvert(1, "Car X"))
+       repo.update(new CarAdvert(1, "Car X", Diesel, 30000, false, Some(12345), Some(new DateTime(2014-11-11))))
  
        val result = repo.findAll()
        result must have size(1)
        result(0).id must beEqualTo(1)
        result(0).title must beEqualTo("Car X")
+       result(0).price must beEqualTo(30000)
+       result(0).isNew must beEqualTo(false)
+       result(0).mileage must beEqualTo(Some(12345))
+       result(0).firstRegistration must beEqualTo(Some(new DateTime(2014-11-11)))
        
      }
      
     "reject to update a car advert if ID does not exist" in new WithApplication {
         val repo = new AnormCarAdvertsRepository()
-       repo.create(new CarAdvert(1, "Car 1"))
+       repo.create(new CarAdvert(1, "Car 1", Gasoline, 20000, true, None, None))
        
-       repo.update(new CarAdvert(2, "Car X"))
+       repo.update(new CarAdvert(2, "Car X", Diesel, 30000, false, Some(12345), Some(new DateTime(2014-11-11))))
  
        val result = repo.findAll()
        result must have size(1)

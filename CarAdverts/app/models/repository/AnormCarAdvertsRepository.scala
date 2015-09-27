@@ -19,7 +19,12 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
       SQL("""
           create table if not exists CARS (
             id INTEGER NOT NULL, 
-            title varchar(255),
+            title VARCHAR(255),
+            fuel VARCHAR(255), 
+            price INTEGER,
+            isNew BOOLEAN,
+            mileage INTEGER,
+            firstRegistration VARCHAR(255),
             PRIMARY KEY (id)
           );
             
@@ -27,11 +32,19 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
     }
  
   
-  val simple = {
+ val simple = {
     get[Long]("id") ~
-    get[String]("title") map {
-      case id~title 
-        => CarAdvert(id, title)
+    get[String]("title") ~
+    get[String]("fuel") ~
+    get[Long]("price") ~
+    get[Boolean]("isNew") ~
+    get[Option[Long]]("mileage") ~
+    get[Option[String]]("firstRegistration") map {
+      case id~title~fuel~price~isNew~mileage~firstRegistration 
+        => CarAdvert(id, title, FuelType.parse(fuel).get, price, isNew, mileage, firstRegistration match {
+          case Some(dateAsString) => Option(new DateTime(dateAsString))
+          case None => None
+        } )
     }
   }
 
@@ -59,17 +72,28 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
    */
   def create(car: CarAdvert): CarAdvert = {
     
-    DB.withConnection { implicit connection =>
-        SQL("""
-            insert into CARS(id, title) 
-            VALUES (
-              {id},
-              {title}
-            )  
-        """).
-          on('id -> car.id,  
-             'title -> car.title          
-             ).executeInsert()
+  DB.withConnection { implicit connection =>
+      SQL("""
+          insert into CARS(id, title,fuel,price,isNew,mileage,firstRegistration) 
+          VALUES (
+            {id},
+            {title},
+            {fuel},
+            {price},
+            {isNew},
+            {mileage},
+            {firstRegistration}
+          )  
+      """).
+        on('id -> car.id,  
+           'title -> car.title,
+           'fuel -> car.fuel.toString(),
+           'price -> car.price,
+           'isNew -> car.isNew,
+           'mileage -> car.mileage,
+           'firstRegistration -> dateOptionToStringOption(car.firstRegistration)           
+           ).executeInsert()
+      
         
       car
     }    
@@ -93,16 +117,33 @@ class AnormCarAdvertsRepository extends CarAdvertsRepository{
     DB.withConnection { implicit connection =>
       SQL("""
         UPDATE CARS 
-        SET title={title}
+        SET title={title},
+            fuel={fuel}, 
+            price={price},
+            isNew={isNew},
+            mileage={mileage},
+            firstRegistration={firstRegistration}
         WHERE id={id};
         """).
         on('id -> carAdvert.id,  
-           'title -> carAdvert.title
+           'title -> carAdvert.title,
+           'fuel -> carAdvert.fuel.toString,
+           'price -> carAdvert.price,
+           'isNew -> carAdvert.isNew,
+           'mileage -> carAdvert.mileage,
+           'firstRegistration -> dateOptionToStringOption(carAdvert.firstRegistration)
            ).executeUpdate()
     }
     
     carAdvert
-  }    
+  } 
+  
+    def dateOptionToStringOption(dateTimeOption : Option[DateTime]) : Option[String] = {
+    dateTimeOption match {
+       case Some(x) => Option(dateTimeOption.get.toString)
+       case _ => None
+    }
+  }
   
  
 }

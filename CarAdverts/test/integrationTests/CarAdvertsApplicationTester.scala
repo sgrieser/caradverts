@@ -12,7 +12,7 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import scala.math.BigDecimal.int2bigDecimal
 
 /**
- * 
+ * Integration tests for class CarAdvertsApplication
  */
 @RunWith(classOf[JUnitRunner])
 class CarAdvertsApplicationTester extends Specification {
@@ -34,7 +34,10 @@ class CarAdvertsApplicationTester extends Specification {
     "save a new car advert"  in new WithApplication{
       
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -51,7 +54,10 @@ class CarAdvertsApplicationTester extends Specification {
 
      // send first car advert
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -62,7 +68,10 @@ class CarAdvertsApplicationTester extends Specification {
       
       // send second car advert
       val jsonBody2 = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("VW Passat"))
+                              "title" -> JsString("VW Passat"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts2 = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody2).
@@ -81,21 +90,27 @@ class CarAdvertsApplicationTester extends Specification {
  
     // send first car advert
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
-                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
-                              
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")).get
+      status(caradverts) must equalTo(200)                
       
       // send second car advert
       val jsonBody2 = Json.obj("id" -> JsNumber(2),
-                              "title" -> JsString("VW Passat"))
+                              "title" -> JsString("VW Passat"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts2 = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody2).
-                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
-     
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json")).get
+     status(caradverts2) must equalTo(200)
      
      // get list of all car adverts:
      val caradverts3 = route(FakeRequest(GET, "/caradverts")).get
@@ -111,7 +126,10 @@ class CarAdvertsApplicationTester extends Specification {
  
     // send first car advert
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -120,7 +138,10 @@ class CarAdvertsApplicationTester extends Specification {
       
       // send second car advert
       val jsonBody2 = Json.obj("id" -> JsNumber(2),
-                              "title" -> JsString("VW Passat"))
+                              "title" -> JsString("VW Passat"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts2 = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody2).
@@ -139,7 +160,10 @@ class CarAdvertsApplicationTester extends Specification {
     "return an empty message in case the ID of a car advert does not exists" in new WithApplication {
     // send car advert
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -158,7 +182,10 @@ class CarAdvertsApplicationTester extends Specification {
  
     // send first car advert
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -167,7 +194,10 @@ class CarAdvertsApplicationTester extends Specification {
       
       // send second car advert
       val jsonBody2 = Json.obj("id" -> JsNumber(2),
-                              "title" -> JsString("VW Passat"))
+                              "title" -> JsString("VW Passat"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts2 = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody2).
@@ -190,7 +220,10 @@ class CarAdvertsApplicationTester extends Specification {
     "update a car advert"  in new WithApplication{
       
       val jsonBody = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X3"))
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts = route(FakeRequest(POST, "/caradverts").
                               withJsonBody(jsonBody).
@@ -198,7 +231,10 @@ class CarAdvertsApplicationTester extends Specification {
                               
       // send an update
       val jsonBody2 = Json.obj("id" -> JsNumber(1),
-                              "title" -> JsString("BMW X6"))
+                              "title" -> JsString("BMW X6"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true))
   
       val caradverts2 = route(FakeRequest(PUT, "/caradverts").
                               withJsonBody(jsonBody2).

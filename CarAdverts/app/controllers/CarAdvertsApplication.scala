@@ -9,6 +9,8 @@ import play.api.libs.functional.syntax._
 import models._
 import models.repository.AnormCarAdvertsRepository
 
+import org.joda.time.DateTime
+
 class CarAdvertsApplication extends Controller {
 
   /**
@@ -21,7 +23,12 @@ class CarAdvertsApplication extends Controller {
    */
    implicit val carWrites: Writes[CarAdvert] = (
     (JsPath \ "id").write[Long] and
-    (JsPath \ "title").write[String]
+    (JsPath \ "title").write[String]and
+    (JsPath \ "fuel").write[FuelType] and
+    (JsPath \ "price").write[Long] and
+    (JsPath \ "isNew").write[Boolean] and
+    (JsPath \ "mileage").writeNullable[Long] and
+    (JsPath \ "firstRegistration").writeNullable[DateTime]
    )(unlift(CarAdvert.unapply))  
   
    
@@ -30,7 +37,12 @@ class CarAdvertsApplication extends Controller {
     */
      implicit val carReads: Reads[CarAdvert] = (
     (JsPath \ "id").read[Long] and
-    (JsPath \ "title").read[String]
+    (JsPath \ "title").read[String] and
+    (JsPath \ "fuel").read[FuelType] and
+    (JsPath \ "price").read[Long] and
+    (JsPath \ "isNew").read[Boolean] and
+    (JsPath \ "mileage").readNullable[Long] and
+    (JsPath \ "firstRegistration").readNullable[DateTime]
    )(CarAdvert.apply _)
    
   
