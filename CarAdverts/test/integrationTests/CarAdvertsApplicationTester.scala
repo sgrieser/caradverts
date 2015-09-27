@@ -285,4 +285,69 @@ class CarAdvertsApplicationTester extends Specification {
     
    
   }
+  
+  "reject a new car advert due to validation failure: old car"  in new WithApplication{
+
+     // send car advert
+      val jsonBody = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(false))
+  
+      val caradverts = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
+                              
+      status(caradverts.get) must equalTo(400)
+      contentType(caradverts.get) must beSome.which(_ == "application/json")
+      contentAsString(caradverts.get) must contain ("First registration date and mileage must be set for new car adverts")
+
+      
+    }  
+
+  "reject a new car advert due to validation failure: new car"  in new WithApplication{
+
+     // send car advert
+      val jsonBody = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(true),
+                              "mileage" -> JsNumber(12345),
+                              "firstRegistration" -> JsString("2014-1-1"))
+  
+      val caradverts = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
+                              
+      status(caradverts.get) must equalTo(400)
+      contentType(caradverts.get) must beSome.which(_ == "application/json")
+      contentAsString(caradverts.get) must contain ("First registration date and mileage must not be set for new car adverts")
+
+      
+    }  
+  
+  "reject a new car advert due to validation failure: date with time"  in new WithApplication{
+
+     // send car advert
+      val jsonBody = Json.obj("id" -> JsNumber(1),
+                              "title" -> JsString("BMW X3"),
+                              "fuel" -> JsString("Diesel"),
+                              "price" -> JsNumber(10000),
+                              "isNew" -> JsBoolean(false),
+                              "mileage" -> JsNumber(12345),
+                              "firstRegistration" -> JsString("2014-1-1'T"))
+  
+      val caradverts = route(FakeRequest(POST, "/caradverts").
+                              withJsonBody(jsonBody).
+                              withHeaders(HeaderNames.CONTENT_TYPE -> "application/json"))
+                              
+      status(caradverts.get) must equalTo(400)
+      contentType(caradverts.get) must beSome.which(_ == "application/json")
+      contentAsString(caradverts.get) must contain ("""msg":"error.expected.jodadate.format","args":["yyyy-MM-dd"]""")
+
+      
+    }    
+  
 }

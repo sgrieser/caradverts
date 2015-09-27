@@ -67,6 +67,7 @@ class CarAdvertsApplication extends Controller {
         car => {
           
           try {
+            CarAdvertValidator.validate(car)
             repository.create(car)
             Ok(Json.obj("status" -> "OK", "message" -> ("Car '" + car.title + "' saved")))
             
@@ -90,6 +91,7 @@ class CarAdvertsApplication extends Controller {
         car => {
           
           try {
+            CarAdvertValidator.validate(car)
             repository.update(car)
             Ok(Json.obj("status" -> "OK", "message" -> ("Car '" + car.title + "' updated")))
           }
